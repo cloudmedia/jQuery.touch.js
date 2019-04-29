@@ -1,29 +1,33 @@
 $.fn.touch = function (callback) {
-    var touch = false;
+    $.touchMove = false;
+    $.touch = false;
+    $.touchAction = "";
     $(this).on("click", function (e) {
-        if (!touch) {
+        if (!$.touch) {
+            $.touchAction = 'click';
             let callbackReal = callback.bind(this);
             callbackReal(this, e);
         } else {
-            touch = true;
+            $.touch = true;
         }
-        touch = false;
+        $.touch = false;
     });
     $(this).on("touchend", function (e) {
         $(this).blur();
         if (typeof e.touches != typeof undefined) {
             e.preventDefault();
-            touch = true;
-            if ($("#touchMove").val() == 'moved') {
-                $("#touchMove").val('');
+            $.touch = true;
+            if ($.touchMove) {
+                $.touchMove = false;
                 return false;
             } else {
+                $.touchAction = 'touch';
                 let callbackReal = callback.bind(this);
                 callbackReal(this, e);
             }
         }
     });
     $(this).on("touchmove", function (e) {
-        $("#touchMove").val('moved');
+        $.touchMove = true;
     });
 }
