@@ -1,33 +1,32 @@
 $.fn.touch = function (callback) {
-    $.touchMove = false;
-    $.touch = false;
-    $.touchAction = "";
-    $(this).on("click", function (e) {
-        if (!$.touch) {
-            $.touchAction = 'click';
-            let callbackReal = callback.bind(this);
-            callbackReal(this, e);
-        } else {
-            $.touch = true;
-        }
-        $.touch = false;
-    });
-    $(this).on("touchend", function (e) {
-        $(this).blur();
-        if (typeof e.touches != typeof undefined) {
-            e.preventDefault();
-            $.touch = true;
-            if ($.touchMove) {
-                $.touchMove = false;
-                return false;
-            } else {
-                $.touchAction = 'touch';
+
+    $.touch = {
+        action: "",
+        move: false,
+        event: false
+    }
+
+    return this.on("click", function (e) {
+            if (!$.touch.event) {
+                $.touch.action = "click";
                 let callbackReal = callback.bind(this);
                 callbackReal(this, e);
             }
-        }
-    });
-    $(this).on("touchmove", function (e) {
-        $.touchMove = true;
-    });
+            $.touch.event = false;
+        })
+        .on("touchend", function (e) {
+            $(this).blur();
+            $.touch.event = true;
+            if ($.touch.move) {
+                $.touch.move = false;
+                return;
+            } else {
+                $.touch.action = "touch";
+                let callbackReal = callback.bind(this);
+                callbackReal(this, e);
+            }
+        })
+        .on("touchmove", function () {
+            $.touch.move = true;
+        });
 }
